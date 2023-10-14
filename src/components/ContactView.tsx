@@ -35,6 +35,8 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
         margin-right: 15px;
         margin-top: 0;
         margin-bottom: 0.5rem;
+        height: 60vh;
+        overflow-y: auto;
         
         div {
             border-bottom: 1px solid #cfcfcf; 
