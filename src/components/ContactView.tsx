@@ -69,7 +69,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
         }
 
         button:nth-child(1) {
-            background-color: #32CD32;
+            background-color: #429C55;
         }
 
         button:nth-child(2) {
@@ -77,7 +77,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
         }
 
         button:nth-child(3) {
-            background-color: #765341;
+            background-color: #D22B2B;
         }
 
     `

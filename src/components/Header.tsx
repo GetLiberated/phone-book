@@ -13,12 +13,12 @@ export default function Header({ setSearch }: SearchProp) {
     const create = css`
         position: absolute; 
         right: 0px; 
-        top: 1.6rem;
+        top: 1rem;
         padding: 8px 10px;
         color: #FFFFFF;
         background-color: #429C55;
         border: none;
-        border-radius: 15px;
+        border-radius: 10px;
         cursor: pointer;
     `
 
