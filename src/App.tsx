@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
-import './App.css';
+
+import { css } from '@emotion/css'
 import { useQuery, gql } from '@apollo/client';
 
 const GET_CONTACT_LIST = gql`
@@ -57,7 +58,10 @@ function DisplayContactList() {
 
 function App() {
   return (
-    <div className="App">
+    <div 
+      className={css`
+      text-align: center;
+    `}>
       <h2>Phone Book</h2>
       <br/>
       <DisplayContactList />
