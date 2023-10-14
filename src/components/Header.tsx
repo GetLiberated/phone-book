@@ -7,12 +7,12 @@ export default function Header({}) {
         justify-content: center; 
         width: 100%;
         position: relative; 
-        padding: 1rem 0;
+        padding-bottom: 1rem;
     `
 
     const create = css`
         position: absolute; 
-        right: 1rem; 
+        right: 0px; 
         top: 1.6rem;
         padding: 8px 10px;
         color: #FFFFFF;
@@ -23,7 +23,6 @@ export default function Header({}) {
     `
 
     const search = css`
-        padding: 0 1rem;
         position: relative;
         display: flex; 
 
@@ -46,7 +45,7 @@ export default function Header({}) {
         top: 0;
         bottom: 0; 
         left: 0; 
-        padding-left: 2.25rem; 
+        padding-left: 1.5rem; 
         align-items: center; 
         pointer-events: none; 
         color: #575757;
