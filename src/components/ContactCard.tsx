@@ -48,7 +48,7 @@ export default function ContactCard({ id, first_name, last_name, phones }: ICont
     return (
         <div key={id} className={card}>
             <div className={avatar}>
-                {first_name[0] + last_name[0]}
+                {first_name[0].toUpperCase() + last_name[0].toUpperCase()}
             </div>
             <div className={info}>
                 <p className={name}>{first_name} {last_name}</p>

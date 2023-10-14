@@ -1,6 +1,7 @@
 import { useQuery, gql } from '@apollo/client';
 import { css } from '@emotion/css'
 import ContactCard from './components/ContactCard';
+import Header from './components/Header';
 
 const GET_CONTACT_LIST = gql`
   query GetContactList (
@@ -28,7 +29,7 @@ const GET_CONTACT_LIST = gql`
   }
 `;
 
-function DisplayContactList(): JSX.Element {
+function ContactList(): JSX.Element {
 
   let contacts: IContacts = [];
   let localContacts: string | null = localStorage.getItem('contacts')
@@ -67,9 +68,8 @@ function App() {
         width: 1024px;
       }
     `}>
-      <h2>Phone Book</h2>
-      <br/>
-      <DisplayContactList />
+      <Header />
+      <ContactList />
     </div>
   );
 }
