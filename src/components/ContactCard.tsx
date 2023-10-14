@@ -1,6 +1,6 @@
 import { css } from '@emotion/css'
 
-export default function ContactCard({ id, first_name, last_name, phones }: IContact) {
+export default function ContactCard({ id, first_name, last_name, phones, onClick }: ContactCardProps) {
     
     const card = css`
         width: 100%
@@ -10,6 +10,7 @@ export default function ContactCard({ id, first_name, last_name, phones }: ICont
         margin-bottom: 1.25rem;
         display: flex;
         gap: 0.8rem; 
+        cursor: pointer;
     `
 
     const avatar = css`
@@ -49,7 +50,7 @@ export default function ContactCard({ id, first_name, last_name, phones }: ICont
     `
 
     return (
-        <div key={id} className={card}>
+        <div key={id} className={card} onClick={() => onClick(id)}>
             <div className={avatar}>
                 {first_name[0].toUpperCase() + last_name[0].toUpperCase()}
             </div>

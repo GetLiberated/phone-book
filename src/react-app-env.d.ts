@@ -10,3 +10,13 @@ interface IContact {
 }
 
 type IContacts = Array<IContact>
+
+interface OnClickProp {
+  onClick: (id: string) => void;
+}
+
+interface ContactListProps extends OnClickProp {
+  contacts: IContacts;
+}
+
+type ContactCardProps = IContact & OnClickProp
