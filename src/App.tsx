@@ -15,7 +15,14 @@ function App() {
   const [contacts, setContacts] = useState<IContacts>([])
   const [favorites, setFavorites] = useState<IContacts>([])
 
-  const [getContacts, { loading, data }] = useLazyQuery(GET_CONTACT_LIST);
+  const [getContacts, { loading, data }] = useLazyQuery(GET_CONTACT_LIST, {
+    onCompleted: (data) => {
+      if (data && data.contact) {
+        setContacts(data.contact);
+        localStorage.setItem('contacts', JSON.stringify(data.contact));
+      }
+    }
+  });
 
   const handleContactClick = (contactId: string) => {
     setSelected(contacts.find(contact => contact.id === contactId))
@@ -38,16 +45,13 @@ function App() {
     setSelected(undefined)
   };
 
-  const handleRefreshClick = () => {
+  const refresh = () => {
     getContacts()
-    if (loading) return <p>Loading...</p>;
-    if (data && data.contact) {
-      setContacts(data.contact);
-      localStorage.setItem('contacts', JSON.stringify(data.contact));
-    }
   }
 
   useEffect(() => {
+    refresh()
+
     let localContacts: string | null = localStorage.getItem('contacts')
     if (localContacts !== null) 
     setContacts(JSON.parse(localContacts))
@@ -77,9 +81,12 @@ function App() {
       <Header />
       {
         favorites.length > 0 &&
-        <FavoriteList contacts={ favorites } />
+        <FavoriteList contacts={ favorites } onClick={handleContactClick} />
       }
-      <ContactList contacts={ contacts } onClick={handleContactClick} />
+      {
+        contacts.length > 0 &&
+        <ContactList contacts={ contacts } onClick={handleContactClick} />
+      }
     </div>
   );
 }

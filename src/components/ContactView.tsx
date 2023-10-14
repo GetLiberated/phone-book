@@ -169,7 +169,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                         <span></span>
                     </div>
                     <div className={avatar}>
-                        {first_name[0].toUpperCase() + last_name[0].toUpperCase()}
+                        {first_name[0]?.toUpperCase() || '' + last_name[0]?.toUpperCase() || ''}
                     </div>
                     <h1 className={name}>{first_name} {last_name}</h1> 
                     <div className={phone}>

@@ -2,7 +2,7 @@ import { css } from '@emotion/css'
 import FavoriteCard from './FavoriteCard';
 import { useRef, useState, useEffect } from 'react';
 
-export default function FavoriteList({ contacts }: ContactsProp): JSX.Element {
+export default function FavoriteList({ contacts, onClick }: ContactsClickIdProps): JSX.Element {
 
     const favRef = useRef<HTMLDivElement>(null) 
 
@@ -55,7 +55,7 @@ export default function FavoriteList({ contacts }: ContactsProp): JSX.Element {
             </button>
             <div className={list} ref={favRef} >
                 { 
-                    contacts.map(({ id, first_name, last_name, phones }) => <FavoriteCard id={ id } first_name={ first_name } last_name={ last_name } phones={ phones } />) 
+                    contacts.map(({ id, first_name, last_name, phones }) => <FavoriteCard id={ id } first_name={ first_name } last_name={ last_name } phones={ phones } onClick={onClick} />) 
                 }
             </div>
             <button onClick={() => {

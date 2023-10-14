@@ -1,10 +1,11 @@
 import { css } from '@emotion/css'
 
-export default function FavoriteCard({ id, first_name, last_name, phones }: IContact) {
+export default function FavoriteCard({ id, first_name, last_name, phones, onClick }: ContactClickIdProps) {
     
     const card = css`
         width: 120px;
         gap: 0.8rem; 
+        cursor: pointer;
     `
 
     const avatar = css`
@@ -43,7 +44,7 @@ export default function FavoriteCard({ id, first_name, last_name, phones }: ICon
     `
 
     return (
-        <div key={id} className={card}>
+        <div key={id} className={card} onClick={() => onClick(id)}>
             <div className={avatar}>
                 {first_name[0].toUpperCase() + last_name[0].toUpperCase()}
             </div>
