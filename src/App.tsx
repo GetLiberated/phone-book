@@ -11,9 +11,11 @@ import ContactView from './components/ContactView';
 
 function App() {
 
-  const [selected, setSelected] = useState<IContact | undefined>(undefined)
   const [contacts, setContacts] = useState<IContacts>([])
   const [favorites, setFavorites] = useState<IContacts>([])
+  const [selected, setSelected] = useState<IContact | undefined>(undefined)
+  const [search, setSearch] = useState('')
+  const [pageNumber, setPageNumber] = useState(1)
 
   const [getContacts, { loading, data }] = useLazyQuery(GET_CONTACT_LIST, {
     onCompleted: (data) => {
@@ -50,6 +52,15 @@ function App() {
   }
 
   useEffect(() => {
+    let localContacts: string | null = localStorage.getItem('contacts')
+    if (localContacts !== null) {
+      const contacts_: IContacts = JSON.parse(localContacts)
+      setContacts(contacts_.filter(contact => contact.first_name.toLowerCase().includes(search.toLowerCase()) || contact.last_name.toLowerCase().includes(search.toLowerCase())))
+      setPageNumber(1)
+    }
+  }, [search]);
+
+  useEffect(() => {
     refresh()
 
     let localContacts: string | null = localStorage.getItem('contacts')
@@ -60,6 +71,30 @@ function App() {
     if (localFavorites !== null)
     setFavorites(JSON.parse(localFavorites))
   }, []);
+
+  const pagination = css`
+  display: flex;
+    justify-content: center;
+    item-align: center;
+    gap: 0.5rem;
+
+    p {
+      display: inline-block; 
+    }
+  `
+
+    const button = css`
+        padding-left: 0.25rem;
+        padding-right: 0.25rem; 
+        border-radius: 9999px; 
+        border-width: 1px; 
+        background-color: #F3F4F6; 
+        border: none;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+        outline: inherit;
+    `
 
   return (
     <div 
@@ -78,15 +113,33 @@ function App() {
         selected &&
         <ContactView id={ selected.id } first_name={ selected.first_name } last_name={ selected.last_name } phones={ selected.phones } onClick={handleClose} isFavorite={ favorites.some(contact => contact.id === selected.id) } favoriteClick={handleFavoriteClick} />
       }
-      <Header />
+      <Header setSearch={setSearch} />
       {
         favorites.length > 0 &&
         <FavoriteList contacts={ favorites } onClick={handleContactClick} />
       }
       {
         contacts.length > 0 &&
-        <ContactList contacts={ contacts } onClick={handleContactClick} />
+        <ContactList contacts={ contacts } favorites={ favorites } onClick={handleContactClick} pageNumber={ pageNumber } />
       }
+      <div className={pagination}>
+
+        <button onClick={() => {setPageNumber(pageNumber => pageNumber - 1)}} className={button} disabled={pageNumber === 1}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M15 6l-6 6l6 6"></path>
+            </svg>
+        </button>
+        <p>
+          {pageNumber}
+        </p>
+        <button onClick={() => {setPageNumber(pageNumber => pageNumber + 1)}} className={button} disabled={pageNumber*10 > contacts.length}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-chevron-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M9 6l6 6l-6 6"></path>
+            </svg>
+        </button>
+      </div>
     </div>
   );
 }

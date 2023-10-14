@@ -1,6 +1,6 @@
 import { css } from '@emotion/css'
 
-export default function Header({}) {
+export default function Header({ setSearch }: SearchProp) {
     
     const header = css`
         display: flex; 
@@ -71,7 +71,7 @@ export default function Header({}) {
                         <path d="M21 21l-6 -6"></path>
                     </svg>
                 </div>
-                <input type="text" placeholder='Search' />
+                <input type="text" placeholder='Search' onKeyUp={(e) => setSearch((e.target as HTMLInputElement).value as string) }/>
             </div>
         </>
     )

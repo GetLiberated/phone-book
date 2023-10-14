@@ -57,7 +57,7 @@ export default function ContactCard({ id, first_name, last_name, phones, onClick
             </div>
             <div className={info}>
                 <p className={name}>{first_name} {last_name}</p>
-                <p className={phone}>{phones[0].number}</p>
+                <p className={phone}>{phones[0]?.number}</p>
             </div>
         </div>
     )

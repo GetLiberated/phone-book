@@ -174,7 +174,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                     <h1 className={name}>{first_name} {last_name}</h1> 
                     <div className={phone}>
                         {
-                            phones.map((phone, i) => (
+                            phones?.map((phone, i) => (
                                 <div>
                                     <p>Phone {i+1}</p>
                                     <a href={'tel:' + phone.number}>{phone.number}</a>
