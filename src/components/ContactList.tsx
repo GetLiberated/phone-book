@@ -8,7 +8,7 @@ export default function ContactList({ contacts, favorites, onClick, pageNumber }
           return !favorites.find(favorite => {
             return favorite.id === contact.id;
           });
-        }).slice((pageNumber - 1) * 10, pageNumber * 10).map(({ id, first_name, last_name, phones }) => <ContactCard id={ id } first_name={ first_name } last_name={ last_name } phones={ phones } onClick={onClick} />) 
+        }).sort((a, b) => a.first_name.localeCompare(b.first_name)).slice((pageNumber - 1) * 10, pageNumber * 10).map(({ id, first_name, last_name, phones }) => <ContactCard id={ id } first_name={ first_name } last_name={ last_name } phones={ phones } onClick={onClick} />) 
       }
     </>
   }
