@@ -46,11 +46,11 @@ export default function FavoriteCard({ id, first_name, last_name, phones, onClic
     return (
         <div key={id} className={card} onClick={() => onClick(id)}>
             <div className={avatar}>
-                {first_name[0].toUpperCase() + last_name[0].toUpperCase()}
+                {first_name[0]?.toUpperCase() || '' + last_name[0]?.toUpperCase() || ''}
             </div>
             <div className={info}>
                 <p className={name}>{first_name} {last_name}</p>
-                <p className={phone}>{phones[0].number}</p>
+                <p className={phone}>{phones[0]?.number}</p>
             </div>
         </div>
     )
