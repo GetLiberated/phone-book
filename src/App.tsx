@@ -30,12 +30,8 @@ const GET_CONTACT_LIST = gql`
   }
 `;
 
-function DisplayContactList() {
-  const { loading, error, data } = useQuery(GET_CONTACT_LIST);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error : {error.message}</p>;
-
+function DisplayContactList(): JSX.Element {
+  
   interface IContact {
     id: string;
     first_name: string;
@@ -45,15 +41,42 @@ function DisplayContactList() {
     }[];
   }
 
-  return data.contact.map(({ id, first_name, last_name, phones }: IContact) => (
-    <div key={id}>
-      <h3>{first_name} {last_name}</h3>
-      <br />
-      <b>Phone:</b>
-      <p>{phones[0].number}</p>
-      <br />
-    </div>
-  ));
+  interface IContacts extends Array<IContact>{}
+
+  let contacts: IContacts = [];
+  let localContacts: string | null = localStorage.getItem('contacts')
+  let skip: boolean = false
+  
+  if (localContacts !== null) {
+    skip = true
+    contacts = JSON.parse(localContacts)
+  }
+  
+  const { loading, error, data } = useQuery(GET_CONTACT_LIST, {skip});
+  
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error : {error.message}</p>;
+  if (data) {
+    contacts = data.contact;
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }
+  
+  return (
+    <>
+      {
+        contacts.map(({ id, first_name, last_name, phones }) => (
+          <div key={id}>
+            <h3>{first_name} {last_name}</h3>
+            <br />
+            <b>Phone:</b>
+            <p>{phones[0].number}</p>
+            <br />
+          </div>
+        ))
+      }
+    </>
+  )
+
 }
 
 function App() {
