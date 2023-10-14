@@ -1,8 +1,6 @@
-import React from 'react';
-import logo from './logo.svg';
-
-import { css } from '@emotion/css'
 import { useQuery, gql } from '@apollo/client';
+import { css } from '@emotion/css'
+import ContactCard from './components/ContactCard';
 
 const GET_CONTACT_LIST = gql`
   query GetContactList (
@@ -31,17 +29,6 @@ const GET_CONTACT_LIST = gql`
 `;
 
 function DisplayContactList(): JSX.Element {
-  
-  interface IContact {
-    id: string;
-    first_name: string;
-    last_name: string;
-    phones: {
-      number: string;
-    }[];
-  }
-
-  interface IContacts extends Array<IContact>{}
 
   let contacts: IContacts = [];
   let localContacts: string | null = localStorage.getItem('contacts')
@@ -61,29 +48,24 @@ function DisplayContactList(): JSX.Element {
     localStorage.setItem('contacts', JSON.stringify(contacts));
   }
   
-  return (
-    <>
-      {
-        contacts.map(({ id, first_name, last_name, phones }) => (
-          <div key={id}>
-            <h3>{first_name} {last_name}</h3>
-            <br />
-            <b>Phone:</b>
-            <p>{phones[0].number}</p>
-            <br />
-          </div>
-        ))
-      }
-    </>
-  )
-
+  return <>
+    { contacts.map(({ id, first_name, last_name, phones }) => <ContactCard id={ id } first_name={ first_name } last_name={ last_name } phones={ phones } />) }
+  </>
 }
 
 function App() {
   return (
     <div 
       className={css`
-      text-align: center;
+      width: 100%;
+      @media screen and (min-width: 640px) {
+        margin: auto;
+        width: 640px;
+      }
+      @media screen and (min-width: 1024px) {
+        margin: auto;
+        width: 1024px;
+      }
     `}>
       <h2>Phone Book</h2>
       <br/>
