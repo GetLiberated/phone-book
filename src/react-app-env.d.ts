@@ -40,6 +40,10 @@ interface PageNumber {
   pageNumber: number;
 }
 
+interface DeleteClick {
+  deleteClick: () => void;
+}
+
 type ContactClickIdProps = IContact & OnClickIdProp
 
 type ContactsClickIdProps = ContactsProp & OnClickIdProp 
@@ -53,3 +57,5 @@ type ContactClickFavoriteClickProps = ContactClickProps & FavoriteProp
 type ContactsClickIdPageProps = ContactsClickIdProps & PageNumber
 
 type ContactsFavortiesClickIdPageProps = ContactsClickIdPageProps & FavoritesProp
+
+type ContactClickFavoriteClickDeleteClickProps = ContactClickFavoriteClickProps & DeleteClick

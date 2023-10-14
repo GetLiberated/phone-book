@@ -1,7 +1,7 @@
 import { css } from '@emotion/css'
 import { useEffect, useState } from 'react'
 
-export default function ContactView({ id, first_name, last_name, phones, onClick, isFavorite, favoriteClick }: ContactClickFavoriteClickProps) {
+export default function ContactView({ id, first_name, last_name, phones, onClick, isFavorite, favoriteClick, deleteClick }: ContactClickFavoriteClickDeleteClickProps) {
 
     const [showModal, setShowModal] = useState('')
     
@@ -207,7 +207,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                                 </svg>
                             }
                         </button>
-                        <button>
+                        <button onClick={() => {setShowModal(''); setTimeout(()=>deleteClick(), 200)}}>
                             <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-trash" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                 <path d="M4 7l16 0"></path>

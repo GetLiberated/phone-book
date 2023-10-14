@@ -1,8 +1,8 @@
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { css } from '@emotion/css'
 import { useEffect, useState } from 'react';
 
-import { GET_CONTACT_LIST } from './graphql/queries';
+import { GET_CONTACT_LIST, DELETE_CONTACT_BY_ID } from './graphql/queries';
 
 import Header from './components/Header';
 import ContactList from './components/ContactList';
@@ -17,14 +17,8 @@ function App() {
   const [search, setSearch] = useState('')
   const [pageNumber, setPageNumber] = useState(1)
 
-  const [getContacts, { loading, data }] = useLazyQuery(GET_CONTACT_LIST, {
-    onCompleted: (data) => {
-      if (data && data.contact) {
-        setContacts(data.contact);
-        localStorage.setItem('contacts', JSON.stringify(data.contact));
-      }
-    }
-  });
+  const [getContacts] = useLazyQuery(GET_CONTACT_LIST);
+  const [deleteContactById] = useMutation(DELETE_CONTACT_BY_ID)
 
   const handleContactClick = (contactId: string) => {
     setSelected(contacts.find(contact => contact.id === contactId))
@@ -43,12 +37,31 @@ function App() {
     }
   };
 
+  const handleDeleteClick = () => {
+    deleteContactById({
+      variables: { id: selected?.id },
+      onCompleted: (data) => {
+        if (data && data.delete_contact_by_pk.id === selected?.id) {
+          refresh()
+          setSelected(undefined)
+        }
+      }
+    })
+  };
+
   const handleClose = () => {
     setSelected(undefined)
   };
 
   const refresh = () => {
-    getContacts()
+    getContacts({
+      onCompleted: (data) => {
+        if (data && data.contact) {
+          setContacts(data.contact);
+          localStorage.setItem('contacts', JSON.stringify(data.contact));
+        }
+      }
+    })
   }
 
   useEffect(() => {
@@ -111,7 +124,7 @@ function App() {
     `}>
       {
         selected &&
-        <ContactView id={ selected.id } first_name={ selected.first_name } last_name={ selected.last_name } phones={ selected.phones } onClick={handleClose} isFavorite={ favorites.some(contact => contact.id === selected.id) } favoriteClick={handleFavoriteClick} />
+        <ContactView id={ selected.id } first_name={ selected.first_name } last_name={ selected.last_name } phones={ selected.phones } onClick={handleClose} isFavorite={ favorites.some(contact => contact.id === selected.id) } favoriteClick={handleFavoriteClick} deleteClick={handleDeleteClick} />
       }
       <Header setSearch={setSearch} />
       {
