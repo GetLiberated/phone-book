@@ -13,11 +13,29 @@ function App() {
 
   const [selected, setSelected] = useState<IContact | undefined>(undefined)
   const [contacts, setContacts] = useState<IContacts>([])
+  const [favorites, setFavorites] = useState<IContacts>([])
 
   const [getContacts, { loading, data }] = useLazyQuery(GET_CONTACT_LIST);
 
   const handleContactClick = (contactId: string) => {
     setSelected(contacts.find(contact => contact.id === contactId))
+  };
+
+  const handleFavoriteClick = () => {
+    if (selected) {
+      const isFavorite = favorites.some(contact => contact.id === selected.id)
+      let arr;
+      if (!isFavorite)
+      arr = [...favorites, selected]
+      else 
+      arr = favorites.filter(contact => contact.id !== selected.id);
+      setFavorites(arr);
+      localStorage.setItem('favorites', JSON.stringify(arr));
+    }
+  };
+
+  const handleClose = () => {
+    setSelected(undefined)
   };
 
   const handleRefreshClick = () => {
@@ -31,9 +49,12 @@ function App() {
 
   useEffect(() => {
     let localContacts: string | null = localStorage.getItem('contacts')
-    
     if (localContacts !== null) 
     setContacts(JSON.parse(localContacts))
+
+    let localFavorites: string | null = localStorage.getItem('favorites')
+    if (localFavorites !== null)
+    setFavorites(JSON.parse(localFavorites))
   }, []);
 
   return (
@@ -51,10 +72,13 @@ function App() {
     `}>
       {
         selected &&
-        <ContactView id={ selected.id } first_name={ selected.first_name } last_name={ selected.last_name } phones={ selected.phones } />
+        <ContactView id={ selected.id } first_name={ selected.first_name } last_name={ selected.last_name } phones={ selected.phones } onClick={handleClose} isFavorite={ favorites.some(contact => contact.id === selected.id) } favoriteClick={handleFavoriteClick} />
       }
       <Header />
-      <FavoriteList />
+      {
+        favorites.length > 0 &&
+        <FavoriteList contacts={ favorites } />
+      }
       <ContactList contacts={ contacts } onClick={handleContactClick} />
     </div>
   );

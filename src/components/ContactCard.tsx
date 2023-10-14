@@ -1,6 +1,6 @@
 import { css } from '@emotion/css'
 
-export default function ContactCard({ id, first_name, last_name, phones, onClick }: ContactCardProps) {
+export default function ContactCard({ id, first_name, last_name, phones, onClick }: ContactClickIdProps) {
     
     const card = css`
         width: 100%
@@ -20,6 +20,7 @@ export default function ContactCard({ id, first_name, last_name, phones, onClick
         align-items: center; 
         border-radius: 9999px; 
         width: 33px; 
+        height: 33px; 
         background-color: #429E25;
         font-size: 1.75rem;
         color: #ffffff;

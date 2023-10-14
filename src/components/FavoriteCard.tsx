@@ -13,9 +13,10 @@ export default function FavoriteCard({ id, first_name, last_name, phones }: ICon
         justify-content: center; 
         align-items: center; 
         border-radius: 15px; 
+        width: 96px;
         height: 96px;
         background-color: #429E25;
-        font-size: 1.75rem;
+        font-size: 4rem;
         color: #ffffff;
     `
 

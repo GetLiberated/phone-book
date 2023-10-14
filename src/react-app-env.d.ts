@@ -11,12 +11,29 @@ interface IContact {
 
 type IContacts = Array<IContact>
 
-interface OnClickProp {
-  onClick: (id: string) => void;
-}
-
-interface ContactListProps extends OnClickProp {
+interface ContactsProp {
   contacts: IContacts;
 }
 
-type ContactCardProps = IContact & OnClickProp
+interface OnClickIdProp {
+  onClick: (id: string) => void;
+}
+
+interface OnClickProp {
+  onClick: () => void;
+}
+
+interface FavoriteProp {
+  isFavorite: boolean;
+  favoriteClick: () => void;
+}
+
+type ContactClickIdProps = IContact & OnClickIdProp
+
+type ContactsClickIdProps = ContactsProp & OnClickIdProp 
+
+type ContactClickProps = IContact & OnClickProp
+
+type ContactsClickProps = ContactsProp & OnClickProp
+
+type ContactClickFavoriteClickProps = ContactClickProps & FavoriteProp
