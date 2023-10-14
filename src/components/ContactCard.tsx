@@ -11,6 +11,10 @@ export default function ContactCard({ id, first_name, last_name, phones, onClick
         display: flex;
         gap: 0.8rem; 
         cursor: pointer;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap; 
+        word-break: break-all;
     `
 
     const avatar = css`
@@ -37,10 +41,7 @@ export default function ContactCard({ id, first_name, last_name, phones, onClick
         font-weight: 600;
         margin-top: 0;
         margin-bottom: 0.5rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap; 
-        word-break: break-all;
+        width: 0;
     `
 
     const phone = css`
