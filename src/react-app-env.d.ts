@@ -52,6 +52,10 @@ interface RefreshClick {
   refreshClick: () => void;
 }
 
+interface SetPageNumber {
+  setPageNumber:  Dispatch<SetStateAction<number>>;
+}
+
 type ContactClickIdProps = IContact & OnClickIdProp
 
 type ContactsClickIdProps = ContactsProp & OnClickIdProp 
