@@ -1,11 +1,16 @@
 import { css } from '@emotion/css'
 import { useEffect, useState } from 'react'
+import { useMutation } from '@apollo/client';
+
+import { ADD_CONTACT_WITH_PHONES } from '../graphql/queries';
 
 export default function ContactView({ id, first_name, last_name, phones, onClick, isFavorite, favoriteClick, deleteClick }: ContactClickFavoriteClickDeleteClickProps) {
 
     const [showModal, setShowModal] = useState('')
     const [editMode, setEditMode] = useState(id === 'new' ? true : false)
     const [contact, setContact] = useState<IContact>({ id, first_name, last_name, phones })
+
+    const [addContact] = useMutation(ADD_CONTACT_WITH_PHONES)
     
     const avatar = css`
         display: flex; 
@@ -172,6 +177,21 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
       }
     `
 
+    const createContact = () => {
+        addContact({
+          variables: { first_name: contact.first_name, last_name: contact.last_name, phones: contact.phones },
+          onCompleted: (data) => {
+            if (data && data.insert_contact) {
+            //   refresh()
+              onClick()
+            }
+          },
+          onError: (error) => {
+            console.log(error)
+          }
+        })
+    }
+
     useEffect(() => {
         setShowModal('show-modal')
     }, [])
@@ -219,7 +239,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                                 </div>
                                 <div>
                                     <p>Phone 1</p>
-                                    <input type='text' placeholder='Phone number' onKeyUp={(e) => setContact(contact => ({...contact, first_name: (e.target as HTMLInputElement).value}))} defaultValue={contact.first_name} />
+                                    <input type='text' placeholder='Phone number' onKeyUp={(e) => {setContact(contact => ({...contact, phones: [{'number': (e.target as HTMLInputElement).value}]}))}} defaultValue={contact.phones[0]?.number} />
                                 </div>
                             </>
                             :
@@ -232,7 +252,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                         }
                     </div>
                     <div className={buttons}>
-                        <button onClick={() => setEditMode(editMode => !editMode)}>
+                        <button onClick={() => { id === 'new' && createContact(); setEditMode(editMode => !editMode)}}>
                             {
                                 !editMode ?
                                 <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-edit" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
