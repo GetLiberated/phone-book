@@ -28,7 +28,6 @@ function App() {
   const handleContactClick = (contactId: string) => {
     setSelected(undefined)
     setTimeout(()=>setSelected(contacts.find(contact => contact.id === contactId)), 1)
-    // setSelected(contacts.find(contact => contact.id === contactId))
   };
 
   const handleFavoriteClick = () => {
@@ -47,7 +46,6 @@ function App() {
   const handleCreateClick = () => {
     setSelected(undefined)
     setTimeout(()=>setSelected({ id: 'new', first_name: '', last_name: '', phones: [] }), 1)
-    // setSelected({ id: 'new', first_name: '', last_name: '', phones: [] })
   };
 
   const handleDeleteClick = () => {
@@ -78,6 +76,8 @@ function App() {
           localStorage.setItem('contacts', JSON.stringify(data.contact));
           if (selected)
           setSelected((data.contact as IContacts).find(contact => contact.id === selected.id))
+          if (isDesktop)
+          setSelected(contacts[0])
           setTimeout(()=>setIsLoading(false), 1000) // Fake loading because the real one is too fast.
         }
       }
