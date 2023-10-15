@@ -1,6 +1,9 @@
 import { css } from '@emotion/css'
+import { useState } from 'react'
 
 export default function Header({ setSearch, createClick, refreshClick }: SearchProp & CreateClick & RefreshClick) {
+
+    const [toggleAnimation, setToggleAnimation] = useState(false)
     
     const header = css`
         display: flex; 
@@ -10,7 +13,7 @@ export default function Header({ setSearch, createClick, refreshClick }: SearchP
         padding-bottom: 1rem;
     `
 
-    const refresh = css`
+    let refresh = css`
         position: absolute; 
         left: 0px; 
         top: 1rem;
@@ -20,6 +23,13 @@ export default function Header({ setSearch, createClick, refreshClick }: SearchP
         border: none;
         border-radius: 10px;
         cursor: pointer;
+        ${
+            toggleAnimation &&
+            `
+            transform: rotate(360deg);
+            transition: transform 1s linear;
+            `
+        }
     `
 
     const create = css`
@@ -66,7 +76,7 @@ export default function Header({ setSearch, createClick, refreshClick }: SearchP
     return (
         <>
             <div className={header}>
-                <button className={refresh} onClick={() => {refreshClick()}}>
+                <button className={refresh} onClick={() => {refreshClick(); setToggleAnimation(true); setTimeout(()=>setToggleAnimation(false), 1000)}}>
                     <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-reload" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                         <path d="M19.933 13.041a8 8 0 1 1 -9.925 -8.788c3.899 -1 7.935 1.007 9.425 4.747"></path>

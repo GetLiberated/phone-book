@@ -9,6 +9,7 @@ import ContactList from './components/ContactList';
 import FavoriteList from './components/FavoriteList';
 import ContactView from './components/ContactView';
 import Pagination from './components/Pagination';
+import Loading from './components/Loading';
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
   const [selected, setSelected] = useState<IContact | undefined>(undefined)
   const [search, setSearch] = useState('')
   const [pageNumber, setPageNumber] = useState(1)
+  const [isLoading, setIsLoading] = useState(false)
 
   const [getContacts] = useLazyQuery(GET_CONTACT_LIST);
   const [deleteContactById] = useMutation(DELETE_CONTACT_BY_ID)
@@ -59,6 +61,7 @@ function App() {
   };
 
   const refresh = () => {
+    setIsLoading(true)
     getContacts({
       fetchPolicy: 'network-only',
       onCompleted: (data) => {
@@ -67,6 +70,7 @@ function App() {
           localStorage.setItem('contacts', JSON.stringify(data.contact));
           if (selected)
           setSelected((data.contact as IContacts).find(contact => contact.id === selected.id))
+          setTimeout(()=>setIsLoading(false), 1000)
         }
       }
     })
@@ -114,10 +118,15 @@ function App() {
         <FavoriteList contacts={ favorites } onClick={handleContactClick} />
       }
       {
+        isLoading ?
+        <Loading />
+        :
         contacts.length > 0 &&
-        <ContactList contacts={ contacts } favorites={ favorites } onClick={handleContactClick} pageNumber={ pageNumber } />
+        <>
+          <ContactList contacts={ contacts } favorites={ favorites } onClick={handleContactClick} pageNumber={ pageNumber } />
+          <Pagination pageNumber={pageNumber} setPageNumber={setPageNumber} contacts={ contacts } />
+        </>
       }
-      <Pagination pageNumber={pageNumber} setPageNumber={setPageNumber} contacts={ contacts } />
     </div>
   );
 }
