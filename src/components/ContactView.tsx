@@ -2,7 +2,7 @@ import { css } from '@emotion/css'
 import { useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client';
 
-import { ADD_CONTACT_WITH_PHONES } from '../graphql/queries';
+import { ADD_CONTACT_WITH_PHONES, ADD_NUMBER_TO_CONTACT, EDIT_CONTACT_BY_ID, EDIT_PHONE_NUMBER } from '../graphql/queries';
 
 export default function ContactView({ id, first_name, last_name, phones, onClick, isFavorite, favoriteClick, deleteClick }: ContactClickFavoriteClickDeleteClickProps) {
 
@@ -11,6 +11,9 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
     const [contact, setContact] = useState<IContact>({ id, first_name, last_name, phones })
 
     const [addContact] = useMutation(ADD_CONTACT_WITH_PHONES)
+    const [addNumberToContact] = useMutation(ADD_NUMBER_TO_CONTACT)
+    const [editContact] = useMutation(EDIT_CONTACT_BY_ID)
+    const [editContactPhone] = useMutation(EDIT_PHONE_NUMBER)
     
     const avatar = css`
         display: flex; 
@@ -177,19 +180,104 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
       }
     `
 
+    const hasSpecialCharacters = (input: string) => {
+        // Define a regular expression pattern to match non-alphanumeric characters (excluding spaces)
+        const pattern = /[^A-Za-z0-9\s]/;
+
+        if (pattern.test(input))
+        alert('Contact name must doesn\'t have a special character')
+      
+        // Use the test method to check if the input string contains any special characters
+        return pattern.test(input);
+      }
+      
+
     const createContact = () => {
-        addContact({
-          variables: { first_name: contact.first_name, last_name: contact.last_name, phones: contact.phones },
-          onCompleted: (data) => {
-            if (data && data.insert_contact) {
-            //   refresh()
-              onClick()
+        if (!hasSpecialCharacters(contact.first_name+contact.last_name)) {
+            addContact({
+              variables: { first_name: contact.first_name, last_name: contact.last_name, phones: contact.phones },
+              onCompleted: (data) => {
+                if (data && data.insert_contact) {
+                //   refresh()
+                  onClick()
+                  setEditMode(editMode => !editMode)
+                }
+              },
+              onError: (error) => {
+                alert('Phone number already exist!')
+              }
+            })
+        }
+    }
+
+    const modifyContact = () => {
+        if (contact.first_name === first_name && contact.last_name === last_name && contact.phones === phones) setEditMode(false)
+        else
+        if (!hasSpecialCharacters(contact.first_name+contact.last_name)) {
+            if (contact.first_name !== first_name || contact.last_name !== last_name)
+                editContact({
+                    variables: {
+                        id: contact.id,
+                        _set: {
+                            first_name: contact.first_name,
+                            last_name: contact.last_name,
+                        }
+                    },
+                    onCompleted: (data) => {
+                        if (data && data.update_contact_by_pk) {
+                            //   refresh()
+                            setEditMode(editMode => !editMode)
+                        }
+                    },
+                    onError: (error) => {
+                        console.log(error)
+                    }
+                })
+            if (contact.phones !== phones) {
+                console.log(contact.phones.length);
+                console.log(phones.length);
+                if (phones.length === 0 || phones.length < contact.phones.length) {
+                    addNumberToContact({
+                        variables: {
+                            contact_id: contact.id,
+                            phone_number: contact.phones[phones.length === 0 ? 0 : contact.phones.length - 1].number
+                        },
+                        onCompleted: (data) => {
+                            if (data && data.insert_phone) {
+                                //   refresh()
+                                setEditMode(editMode => !editMode)
+                            }
+                        },
+                        onError: (error) => {
+                            alert('Phone number already exist!')
+                        }
+                    })
+                }
+                else
+                contact.phones.forEach((phone, i) => {
+                    if (phone.number !== phones[i].number)
+                        editContactPhone({
+                            variables: {
+                                pk_columns: {
+                                    number: phones[i].number,
+                                    contact_id: contact.id
+                                },
+                                new_phone_number: phone.number
+                            },
+                            onCompleted: (data) => {
+                                if (data && data.update_phone_by_pk) {
+                                    //   refresh()
+                                    setEditMode(editMode => !editMode)
+                                }
+                            },
+
+                            onError: (error) => {
+                                alert('Phone number already exist!')
+                            }
+                        })
+                })
             }
-          },
-          onError: (error) => {
-            console.log(error)
-          }
-        })
+        }
     }
 
     useEffect(() => {
@@ -222,7 +310,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                             editMode ?
                             <>{'Edit'}</>
                             :
-                            <>{first_name} {last_name}</>
+                            <>{contact.first_name} {contact.last_name}</>
                         }
                     </h1> 
                     <div className={phone}>
@@ -239,11 +327,57 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                                 </div>
                                 <div>
                                     <p>Phone 1</p>
-                                    <input type='text' placeholder='Phone number' onKeyUp={(e) => {setContact(contact => ({...contact, phones: [{'number': (e.target as HTMLInputElement).value}]}))}} defaultValue={contact.phones[0]?.number} />
+                                    <input type='text' placeholder='Phone number' onKeyUp={(e) => {
+                                        setContact((contact_) => {
+                                            return { ...contact_, phones: [ { number: (e.target as HTMLInputElement).value } ] };
+                                          });
+                                    }} defaultValue={contact.phones[0]?.number} />
                                 </div>
+                                {
+                                    phones.length > 0 &&
+                                    <>
+                                    {
+                                        phones.slice(1).map((phone, i) => (
+                                            <div>
+                                                <p>Phone {i+2}</p>
+                                                <input type='text' placeholder='Phone number' onKeyUp={(e) => {
+                                                    setContact((contact_) => {
+                                                        const updatedNumber = contact_.phones.map((phone, index) => {
+                                                        if (i === index) {
+                                                            return { ...phone, number: (e.target as HTMLInputElement).value }; // Create a new object with the updated value
+                                                        }
+                                                        return phone;
+                                                        });
+                                                
+                                                        return { ...contact_, phones: updatedNumber };
+                                                    });
+                                                }} defaultValue={phone.number} />
+                                            </div>
+                                        ))
+                                    }
+                                    <div>
+                                        <p>Phone {phones.length+1}</p>
+                                        <input type='text' placeholder='Phone number' onKeyUp={(e) => {
+                                            setContact((contact_) => {
+                                                if (contact_.phones.length === phones.length) {
+                                                    return { ...contact_, phones: [ ...contact_.phones, { number: (e.target as HTMLInputElement).value } ] };
+                                                }
+                                                const updatedNumber = contact_.phones.map((phone, index) => {
+                                                    if (phones.length-1 === index) {
+                                                        return { ...phone, number: (e.target as HTMLInputElement).value }; // Create a new object with the updated value
+                                                    }
+                                                    return phone;
+                                                });
+                                        
+                                                return { ...contact_, phones: updatedNumber };
+                                              });
+                                        }} />
+                                    </div>
+                                    </>
+                                }
                             </>
                             :
-                            phones?.map((phone, i) => (
+                            contact.phones?.map((phone, i) => (
                                 <div>
                                     <p>Phone {i+1}</p>
                                     <a href={'tel:' + phone.number}>{phone.number}</a>
@@ -252,7 +386,11 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                         }
                     </div>
                     <div className={buttons}>
-                        <button onClick={() => { id === 'new' && createContact(); setEditMode(editMode => !editMode)}}>
+                        <button onClick={() => {
+                            if (id === 'new') createContact();
+                            else if (editMode) modifyContact(); 
+                            else if (!editMode) setEditMode(true)
+                        }}>
                             {
                                 !editMode ?
                                 <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-edit" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -287,7 +425,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                         }
                         <button onClick={() => {
                             if (id === 'new') {setShowModal(''); setTimeout(()=>onClick(), 200)}
-                            else if (editMode) setEditMode(false)
+                            else if (editMode) { setEditMode(false); setContact({ id, first_name, last_name, phones }) }
                             else { setShowModal(''); setTimeout(()=>deleteClick(), 200) }
                         }}>
                             {
