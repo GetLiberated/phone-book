@@ -76,6 +76,8 @@ function App() {
           localStorage.setItem('contacts', JSON.stringify(data.contact));
           if (selected)
           setSelected((data.contact as IContacts).find(contact => contact.id === selected.id))
+          if (window.innerWidth > 1024 && !selected)
+          setSelected(data.contact[0])
           setTimeout(()=>setIsLoading(false), 1000) // Fake loading because the real one is too fast.
         }
       }
@@ -92,19 +94,16 @@ function App() {
   }, [search]);
 
   useEffect(() => {
-    if (!selected) setSelected(contacts[0]);
+    if (isDesktop && !selected) setSelected(contacts[0]);
+    else if (!isDesktop) setSelected(undefined)
   }, [isDesktop]);
 
   useEffect(() => {
     let localContacts: string | null = localStorage.getItem('contacts')
     if (localContacts !== null) 
     setContacts(JSON.parse(localContacts))
-    else {
-      refresh()
-
-      if (isDesktop)
-      setSelected(contacts[0])
-    }
+    else
+    refresh()
 
     let localFavorites: string | null = localStorage.getItem('favorites')
     if (localFavorites !== null)
@@ -168,7 +167,7 @@ function App() {
             }
           </div>
           {
-            (selected && isDesktop) &&
+            (selected && isDesktop && !isLoading) &&
               <DesktopContactView id={ selected.id } first_name={ selected.first_name } last_name={ selected.last_name } phones={ selected.phones } onClick={handleClose} isFavorite={ favorites.some(contact => contact.id === selected.id) } favoriteClick={handleFavoriteClick} deleteClick={handleDeleteClick} refreshClick={refresh} />
           }
         </div>
