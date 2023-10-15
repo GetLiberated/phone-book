@@ -344,7 +344,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                                 </div>
                                 <div>
                                     <p>Phone 1</p>
-                                    <input type='text' placeholder='Phone number' onKeyUp={(e) => {
+                                    <input type='number' placeholder='Phone number' onKeyUp={(e) => {
                                         setContact((contact_) => {
                                             return { ...contact_, phones: [ { number: (e.target as HTMLInputElement).value } ] };
                                           });
@@ -358,7 +358,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                                             if (i !== 0) return (
                                             <div>
                                                 <p>Phone {i+1}</p>
-                                                <input type='text' placeholder='Phone number' onKeyUp={(e) => {
+                                                <input type='number' placeholder='Phone number' onKeyUp={(e) => {
                                                     setContact((contact_) => {
                                                         const updatedNumber = contact_.phones.map((phone, index) => {
                                                         if (i === index) {
