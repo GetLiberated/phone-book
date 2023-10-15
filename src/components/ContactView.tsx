@@ -381,7 +381,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                                                     return { ...contact_, phones: [ ...contact_.phones, { number: (e.target as HTMLInputElement).value } ] };
                                                 }
                                                 const updatedNumber = contact_.phones.map((phone, index) => {
-                                                    if (phones.length-1 === index) {
+                                                    if (contact_.phones.length-1 === index) {
                                                         return { ...phone, number: (e.target as HTMLInputElement).value }; // Create a new object with the updated value
                                                     }
                                                     return phone;

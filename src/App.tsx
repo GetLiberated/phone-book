@@ -70,7 +70,7 @@ function App() {
           localStorage.setItem('contacts', JSON.stringify(data.contact));
           if (selected)
           setSelected((data.contact as IContacts).find(contact => contact.id === selected.id))
-          setTimeout(()=>setIsLoading(false), 1000)
+          setTimeout(()=>setIsLoading(false), 1000) // Fake loading because the real one is too fast.
         }
       }
     })
