@@ -227,7 +227,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                 let localContacts: string | null = localStorage.getItem('contacts')
                 if (localContacts !== null) {
                     const contacts_: IContacts = JSON.parse(localContacts)
-                    if (!contacts_.filter(contact_ => contact_.first_name.toLowerCase() === contact.first_name.toLowerCase() && contact_.last_name.toLowerCase() === contact.last_name.toLowerCase())) {
+                    if (contacts_.filter(contact_ => contact_.first_name.toLowerCase() === contact.first_name.toLowerCase() && contact_.last_name.toLowerCase() === contact.last_name.toLowerCase()).length === 0) {
                         editContact({
                             variables: {
                                 id: contact.id,
@@ -247,9 +247,9 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                             }
                         })
                     }
-                }
-                else {
-                    alert('Contact name already exist!')
+                    else {
+                        alert('Contact name already exist!')
+                    }
                 }
             }
             if (contact.phones !== phones) {
