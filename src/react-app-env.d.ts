@@ -44,6 +44,10 @@ interface DeleteClick {
   deleteClick: () => void;
 }
 
+interface CreateClick {
+  createClick: () => void;
+}
+
 type ContactClickIdProps = IContact & OnClickIdProp
 
 type ContactsClickIdProps = ContactsProp & OnClickIdProp 

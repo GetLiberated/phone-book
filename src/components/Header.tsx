@@ -1,6 +1,6 @@
 import { css } from '@emotion/css'
 
-export default function Header({ setSearch }: SearchProp) {
+export default function Header({ setSearch, createClick }: SearchProp & CreateClick) {
     
     const header = css`
         display: flex; 
@@ -55,7 +55,7 @@ export default function Header({ setSearch }: SearchProp) {
         <>
             <div className={header}>
                 <h2>Phone Book</h2>
-                <button className={create}>
+                <button className={create} onClick={() => {createClick()}}>
                     <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-plus" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                         <path d="M12 5l0 14"></path>

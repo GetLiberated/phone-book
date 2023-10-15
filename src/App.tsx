@@ -37,6 +37,10 @@ function App() {
     }
   };
 
+  const handleCreateClick = () => {
+    setSelected({ id: 'new', first_name: '', last_name: '', phones: [] })
+  };
+
   const handleDeleteClick = () => {
     deleteContactById({
       variables: { id: selected?.id },
@@ -126,7 +130,7 @@ function App() {
         selected &&
         <ContactView id={ selected.id } first_name={ selected.first_name } last_name={ selected.last_name } phones={ selected.phones } onClick={handleClose} isFavorite={ favorites.some(contact => contact.id === selected.id) } favoriteClick={handleFavoriteClick} deleteClick={handleDeleteClick} />
       }
-      <Header setSearch={setSearch} />
+      <Header setSearch={setSearch} createClick={handleCreateClick} />
       {
         favorites.length > 0 &&
         <FavoriteList contacts={ favorites } onClick={handleContactClick} />

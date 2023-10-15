@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 export default function ContactView({ id, first_name, last_name, phones, onClick, isFavorite, favoriteClick, deleteClick }: ContactClickFavoriteClickDeleteClickProps) {
 
     const [showModal, setShowModal] = useState('')
+    const [editMode, setEditMode] = useState(id === 'new' ? true : false)
+    const [contact, setContact] = useState<IContact>({ id, first_name, last_name, phones })
     
     const avatar = css`
         display: flex; 
@@ -52,6 +54,14 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                 color: #429E25;
                 text-decoration: none;
             }
+
+            input {
+                width: 95%;
+                border: none;
+                font-size: 1rem;
+                outline: 2px solid transparent;
+                outline-offset: 2px;
+            }
         }
     `
 
@@ -59,6 +69,9 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
         position: absolute; 
         right: 1rem; 
         bottom: 1rem;
+        background-color: white;
+        padding: 0.5rem;
+        border-radius: 15px;
 
         button {
             padding: 8px 10px;
@@ -66,6 +79,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
             border: none;
             border-radius: 15px;
             cursor: pointer;
+            margin-left: 8px;
         }
 
         button:nth-child(1) {
@@ -73,7 +87,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
         }
 
         button:nth-child(2) {
-            background-color: #FBBF24;
+            background-color: ${editMode ? '#D22B2B' : '#FBBF24'};
         }
 
         button:nth-child(3) {
@@ -171,11 +185,44 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                         <span></span>
                     </div>
                     <div className={avatar}>
-                        {first_name[0]?.toUpperCase() || '' + last_name[0]?.toUpperCase() || ''}
+                        {
+                            (contact.first_name[0]) &&
+                            contact.first_name[0].toUpperCase()
+                        }
+                        {
+                            (contact.last_name[0]) &&
+                            contact.last_name[0].toUpperCase()
+                        }
                     </div>
-                    <h1 className={name}>{first_name} {last_name}</h1> 
+                    <h1 className={name}>
+                        {
+                            id === 'new' ?
+                            <>{'New contact'}</>
+                            :
+                            editMode ?
+                            <>{'Edit'}</>
+                            :
+                            <>{first_name} {last_name}</>
+                        }
+                    </h1> 
                     <div className={phone}>
                         {
+                            editMode ?
+                            <>
+                                <div>
+                                    <p>First name</p>
+                                    <input type='text' placeholder='First name' onKeyUp={(e) => setContact(contact => ({...contact, first_name: (e.target as HTMLInputElement).value}))} defaultValue={contact.first_name} />
+                                </div>
+                                <div>
+                                    <p>Last name</p>
+                                    <input type='text' placeholder='Last name' onKeyUp={(e) => setContact(contact => ({...contact, last_name: (e.target as HTMLInputElement).value}))} defaultValue={contact.last_name} />
+                                </div>
+                                <div>
+                                    <p>Phone 1</p>
+                                    <input type='text' placeholder='Phone number' onKeyUp={(e) => setContact(contact => ({...contact, first_name: (e.target as HTMLInputElement).value}))} defaultValue={contact.first_name} />
+                                </div>
+                            </>
+                            :
                             phones?.map((phone, i) => (
                                 <div>
                                     <p>Phone {i+1}</p>
@@ -185,37 +232,61 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                         }
                     </div>
                     <div className={buttons}>
-                        <button>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-edit" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path>
-                                <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path>
-                                <path d="M16 5l3 3"></path>
-                            </svg>
-                        </button>
-                        <button onClick={() => favoriteClick()}>
+                        <button onClick={() => setEditMode(editMode => !editMode)}>
                             {
-                                isFavorite ?
-                                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-star-filled" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                !editMode ?
+                                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-edit" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" stroke-width="0" fill="currentColor"></path>
+                                    <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path>
+                                    <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path>
+                                    <path d="M16 5l3 3"></path>
                                 </svg>
                                 :
-                                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-star" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-check" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"></path>
+                                    <path d="M5 12l5 5l10 -10"></path>
                                 </svg>
                             }
                         </button>
-                        <button onClick={() => {setShowModal(''); setTimeout(()=>deleteClick(), 200)}}>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-trash" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M4 7l16 0"></path>
-                                <path d="M10 11l0 6"></path>
-                                <path d="M14 11l0 6"></path>
-                                <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
-                                <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
-                            </svg>
+                        {
+                            !editMode &&
+                            <button onClick={() => favoriteClick()}>
+                                {
+                                    isFavorite ?
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-star-filled" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" stroke-width="0" fill="currentColor"></path>
+                                    </svg>
+                                    :
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-star" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"></path>
+                                    </svg>
+                                }
+                            </button>
+                        }
+                        <button onClick={() => {
+                            if (id === 'new') {setShowModal(''); setTimeout(()=>onClick(), 200)}
+                            else if (editMode) setEditMode(false)
+                            else { setShowModal(''); setTimeout(()=>deleteClick(), 200) }
+                        }}>
+                            {
+                                !editMode ?
+                                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-trash" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M4 7l16 0"></path>
+                                    <path d="M10 11l0 6"></path>
+                                    <path d="M14 11l0 6"></path>
+                                    <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
+                                    <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
+                                </svg>
+                                :
+                                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-x" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M18 6l-12 12"></path>
+                                    <path d="M6 6l12 12"></path>
+                                </svg>
+                            }
                         </button>
                     </div>
                 </div>
