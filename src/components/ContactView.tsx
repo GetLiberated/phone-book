@@ -185,7 +185,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
         const pattern = /[^A-Za-z0-9\s]/;
 
         if (pattern.test(input))
-        alert('Contact name must doesn\'t have a special character')
+        alert('Contact name must not have a special character')
       
         // Use the test method to check if the input string contains any special characters
         return pattern.test(input);
