@@ -76,8 +76,6 @@ function App() {
           localStorage.setItem('contacts', JSON.stringify(data.contact));
           if (selected)
           setSelected((data.contact as IContacts).find(contact => contact.id === selected.id))
-          if (isDesktop)
-          setSelected(contacts[0])
           setTimeout(()=>setIsLoading(false), 1000) // Fake loading because the real one is too fast.
         }
       }
@@ -101,8 +99,12 @@ function App() {
     let localContacts: string | null = localStorage.getItem('contacts')
     if (localContacts !== null) 
     setContacts(JSON.parse(localContacts))
-    else
-    refresh()
+    else {
+      refresh()
+
+      if (isDesktop)
+      setSelected(contacts[0])
+    }
 
     let localFavorites: string | null = localStorage.getItem('favorites')
     if (localFavorites !== null)
