@@ -196,7 +196,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
         let localContacts: string | null = localStorage.getItem('contacts')
         if (localContacts !== null) {
           const contacts_: IContacts = JSON.parse(localContacts)
-          if (!contacts_.filter(contact_ => contact_.first_name.toLowerCase() === contact.first_name.toLowerCase() && contact_.last_name.toLowerCase() === contact.last_name.toLowerCase())) {
+          if (contacts_.filter(contact_ => contact_.first_name.toLowerCase() === contact.first_name.toLowerCase() && contact_.last_name.toLowerCase() === contact.last_name.toLowerCase()).length === 0) {
               if (!hasSpecialCharacters(contact.first_name+contact.last_name)) {
                   addContact({
                       variables: { first_name: contact.first_name, last_name: contact.last_name, phones: contact.phones },
