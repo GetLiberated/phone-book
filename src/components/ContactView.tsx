@@ -375,7 +375,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                                     }
                                     <div>
                                         <p>Phone {phones.length+1}</p>
-                                        <input type='text' placeholder='Phone number' onKeyUp={(e) => {
+                                        <input type='number' placeholder='Phone number' onKeyUp={(e) => {
                                             setContact((contact_) => {
                                                 if (contact_.phones.length === phones.length) {
                                                     return { ...contact_, phones: [ ...contact_.phones, { number: (e.target as HTMLInputElement).value } ] };
