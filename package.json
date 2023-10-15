@@ -6,7 +6,6 @@
     "@apollo/client": "^3.8.5",
     "@emotion/css": "^11.11.2",
     "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.58",
@@ -46,8 +45,10 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@testing-library/react": "^14.0.0",
     "gh-pages": "^6.0.0",
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "jest": "^27.5.1"
   },
   "homepage": "https://GetLiberated.github.io/phone-book"
 }
