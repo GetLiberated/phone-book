@@ -59,10 +59,13 @@ function App() {
 
   const refresh = () => {
     getContacts({
+      fetchPolicy: 'network-only',
       onCompleted: (data) => {
         if (data && data.contact) {
           setContacts(data.contact);
           localStorage.setItem('contacts', JSON.stringify(data.contact));
+          if (selected)
+          setSelected((data.contact as IContacts).find(contact => contact.id === selected.id))
         }
       }
     })
@@ -78,8 +81,6 @@ function App() {
   }, [search]);
 
   useEffect(() => {
-    refresh()
-
     let localContacts: string | null = localStorage.getItem('contacts')
     if (localContacts !== null) 
     setContacts(JSON.parse(localContacts))
@@ -128,9 +129,9 @@ function App() {
     `}>
       {
         selected &&
-        <ContactView id={ selected.id } first_name={ selected.first_name } last_name={ selected.last_name } phones={ selected.phones } onClick={handleClose} isFavorite={ favorites.some(contact => contact.id === selected.id) } favoriteClick={handleFavoriteClick} deleteClick={handleDeleteClick} />
+        <ContactView id={ selected.id } first_name={ selected.first_name } last_name={ selected.last_name } phones={ selected.phones } onClick={handleClose} isFavorite={ favorites.some(contact => contact.id === selected.id) } favoriteClick={handleFavoriteClick} deleteClick={handleDeleteClick} refreshClick={refresh} />
       }
-      <Header setSearch={setSearch} createClick={handleCreateClick} />
+      <Header setSearch={setSearch} createClick={handleCreateClick} refreshClick={refresh} />
       {
         favorites.length > 0 &&
         <FavoriteList contacts={ favorites } onClick={handleContactClick} />

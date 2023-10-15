@@ -48,6 +48,10 @@ interface CreateClick {
   createClick: () => void;
 }
 
+interface RefreshClick {
+  refreshClick: () => void;
+}
+
 type ContactClickIdProps = IContact & OnClickIdProp
 
 type ContactsClickIdProps = ContactsProp & OnClickIdProp 

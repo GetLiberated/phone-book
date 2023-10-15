@@ -4,7 +4,7 @@ import { useMutation } from '@apollo/client';
 
 import { ADD_CONTACT_WITH_PHONES, ADD_NUMBER_TO_CONTACT, EDIT_CONTACT_BY_ID, EDIT_PHONE_NUMBER } from '../graphql/queries';
 
-export default function ContactView({ id, first_name, last_name, phones, onClick, isFavorite, favoriteClick, deleteClick }: ContactClickFavoriteClickDeleteClickProps) {
+export default function ContactView({ id, first_name, last_name, phones, onClick, isFavorite, favoriteClick, deleteClick, refreshClick }: ContactClickFavoriteClickDeleteClickProps & RefreshClick) {
 
     const [showModal, setShowModal] = useState('')
     const [editMode, setEditMode] = useState(id === 'new' ? true : false)
@@ -193,20 +193,29 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
       
 
     const createContact = () => {
-        if (!hasSpecialCharacters(contact.first_name+contact.last_name)) {
-            addContact({
-              variables: { first_name: contact.first_name, last_name: contact.last_name, phones: contact.phones },
-              onCompleted: (data) => {
-                if (data && data.insert_contact) {
-                //   refresh()
-                  onClick()
-                  setEditMode(editMode => !editMode)
-                }
-              },
-              onError: (error) => {
-                alert('Phone number already exist!')
+        let localContacts: string | null = localStorage.getItem('contacts')
+        if (localContacts !== null) {
+          const contacts_: IContacts = JSON.parse(localContacts)
+          if (!contacts_.filter(contact_ => contact_.first_name.toLowerCase() === contact.first_name.toLowerCase() && contact_.last_name.toLowerCase() === contact.last_name.toLowerCase())) {
+              if (!hasSpecialCharacters(contact.first_name+contact.last_name)) {
+                  addContact({
+                      variables: { first_name: contact.first_name, last_name: contact.last_name, phones: contact.phones },
+                      onCompleted: (data) => {
+                      if (data && data.insert_contact) {
+                          refreshClick()
+                          onClick()
+                          setEditMode(editMode => !editMode)
+                      }
+                      },
+                      onError: (error) => {
+                      alert('Phone number already exist!')
+                      }
+                  })
               }
-            })
+          }
+            else {
+                alert('Contact name already exist!')
+            }
         }
     }
 
@@ -214,28 +223,36 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
         if (contact.first_name === first_name && contact.last_name === last_name && contact.phones === phones) setEditMode(false)
         else
         if (!hasSpecialCharacters(contact.first_name+contact.last_name)) {
-            if (contact.first_name !== first_name || contact.last_name !== last_name)
-                editContact({
-                    variables: {
-                        id: contact.id,
-                        _set: {
-                            first_name: contact.first_name,
-                            last_name: contact.last_name,
-                        }
-                    },
-                    onCompleted: (data) => {
-                        if (data && data.update_contact_by_pk) {
-                            //   refresh()
-                            setEditMode(editMode => !editMode)
-                        }
-                    },
-                    onError: (error) => {
-                        console.log(error)
+            if (contact.first_name !== first_name || contact.last_name !== last_name) {
+                let localContacts: string | null = localStorage.getItem('contacts')
+                if (localContacts !== null) {
+                    const contacts_: IContacts = JSON.parse(localContacts)
+                    if (!contacts_.filter(contact_ => contact_.first_name.toLowerCase() === contact.first_name.toLowerCase() && contact_.last_name.toLowerCase() === contact.last_name.toLowerCase())) {
+                        editContact({
+                            variables: {
+                                id: contact.id,
+                                _set: {
+                                    first_name: contact.first_name,
+                                    last_name: contact.last_name,
+                                }
+                            },
+                            onCompleted: (data) => {
+                                if (data && data.update_contact_by_pk) {
+                                    refreshClick()
+                                    setEditMode(editMode => !editMode)
+                                }
+                            },
+                            onError: (error) => {
+                                console.log(error)
+                            }
+                        })
                     }
-                })
+                }
+                else {
+                    alert('Contact name already exist!')
+                }
+            }
             if (contact.phones !== phones) {
-                console.log(contact.phones.length);
-                console.log(phones.length);
                 if (phones.length === 0 || phones.length < contact.phones.length) {
                     addNumberToContact({
                         variables: {
@@ -244,7 +261,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                         },
                         onCompleted: (data) => {
                             if (data && data.insert_phone) {
-                                //   refresh()
+                                refreshClick()
                                 setEditMode(editMode => !editMode)
                             }
                         },
@@ -266,7 +283,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                             },
                             onCompleted: (data) => {
                                 if (data && data.update_phone_by_pk) {
-                                    //   refresh()
+                                    refreshClick()
                                     setEditMode(editMode => !editMode)
                                 }
                             },
@@ -337,9 +354,10 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                                     phones.length > 0 &&
                                     <>
                                     {
-                                        phones.slice(1).map((phone, i) => (
+                                        phones.map((phone, i) => {
+                                            if (i !== 0) return (
                                             <div>
-                                                <p>Phone {i+2}</p>
+                                                <p>Phone {i+1}</p>
                                                 <input type='text' placeholder='Phone number' onKeyUp={(e) => {
                                                     setContact((contact_) => {
                                                         const updatedNumber = contact_.phones.map((phone, index) => {
@@ -353,7 +371,7 @@ export default function ContactView({ id, first_name, last_name, phones, onClick
                                                     });
                                                 }} defaultValue={phone.number} />
                                             </div>
-                                        ))
+                                        )})
                                     }
                                     <div>
                                         <p>Phone {phones.length+1}</p>
